@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Client</title>
+</head>
+<body>
+
+  <h1>Frontend works</h1>
+
+  <button onclick="loadUsers()">
+    Load users
+  </button>
+
+  <pre id="result"></pre>
+
+  <script>
+    async function loadUsers() {
+      const res = await fetch(
+        "http://localhost:5000/users"
+      );
+
+      const data = await res.json();
+
+      document.getElementById("result").innerText =
+        JSON.stringify(data, null, 2);
+    }
+  </script>
+
+</body>
+</html>
