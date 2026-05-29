@@ -1,0 +1,39 @@
+
+
+services:
+
+  backend:
+    build: ./server
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      DB_USER: postgres
+      DB_HOST: postgres
+      DB_NAME: testdb
+      DB_PASSWORD: 123456
+      DB_PORT: 5432
+
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: testdb
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./server/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
