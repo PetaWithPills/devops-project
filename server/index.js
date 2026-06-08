@@ -16,45 +16,45 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-app.get("/", (req, res) => {
+// Базовый роут для проверки самого бэка
+app.get("/api", (req, res) => {
   res.send("API works");
 });
 
-app.get("/users", async (req, res) => {
+// Получить пользователей (добавили /api)
+app.get("/api/users", async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM users ORDER BY id"
     );
-
     res.json(result.rows);
   } catch (err) {
     console.log(err);
-
     res.status(500).json({
       error: err.message,
     });
   }
 });
 
-app.post("/users", async (req, res) => {
+// Создать пользователя (добавили /api)
+app.post("/api/users", async (req, res) => {
   try {
     const { name, email } = req.body;
-
     const result = await pool.query(
       "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
       [name, email]
     );
-
     res.json(result.rows[0]);
   } catch (err) {
     console.log(err);
-
     res.status(500).json({
       error: err.message,
     });
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server started on port 5000");
+// МЕНЯЕМ ПОРТ НА 3000, чтобы не было конфликта с фронтендом!
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
