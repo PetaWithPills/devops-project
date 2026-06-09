@@ -15,14 +15,24 @@
 
   <script>
     async function loadUsers() {
-      const res = await fetch(
-        "http://localhost:5000/users"
-      );
+      // Определяем, где мы находимся: если локально на Windows, 
+      // то шлем запросы на порт бэкенда (3000). 
+      // Если на сервере, Nginx сам поймает относительный путь '/api/users'
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const apiUrl = isLocalhost 
+        ? "http://localhost:3000/api/users" 
+        : "/api/users";
 
-      const data = await res.json();
+      try {
+        const res = await fetch(apiUrl);
+        const data = await res.json();
 
-      document.getElementById("result").innerText =
-        JSON.stringify(data, null, 2);
+        document.getElementById("result").innerText =
+          JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error("Ошибка при получении пользователей:", err);
+        document.getElementById("result").innerText = "Ошибка: " + err.message;
+      }
     }
   </script>
 

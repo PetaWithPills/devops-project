@@ -1,49 +1,36 @@
+version: '3.8'
+
 services:
-
-  backend:
-    build: ./server
-
+  # Сервер Фронтенда
+  frontend:
+    build: ./client
     ports:
       - "5000:5000"
-
     environment:
-      DB_USER: postgres
-      DB_HOST: postgres
-      DB_NAME: testdb
-      DB_PASSWORD: 123456
-      DB_PORT: 5432
+      - FRONTEND_PORT=5000
 
-    depends_on:
-      - postgres
-
-  nginx:
-    image: nginx:latest
-
+  # Сервер Бэкенда
+  backend:
+    build: ./server
     ports:
-      - "80:80"
-
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-
-    depends_on:
-      - backend
-
-  postgres:
-    image: postgres:16
-
-    restart: always
-
+      - "3000:3000"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: testdb
+      - DATABASE_URL=postgres://peta:docker_password@db:5432/my_deploy_db
+      - PORT=3000
+    depends_on:
+      - db
 
+  # База данных
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: peta
+      POSTGRES_PASSWORD: docker_password
+      POSTGRES_DB: my_deploy_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./server/init/init.sql:/docker-entrypoint-initdb.d/init.sql
-
 volumes:
-  postgres_data:
+  pgdata:
